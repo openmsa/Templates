@@ -1,0 +1,75 @@
+{*
+<variables>
+  <variable name="ADMIN_PASSWD" type="String" displayOrder="0" maxLength="100">  </variable>
+  <variable name="ONM_DEMO_MASK" type="String" displayOrder="0" maxLength="100">  </variable>
+  <variable name="ONM_DEMO_IP" type="String" displayOrder="0" maxLength="100">  </variable>
+  <variable name="EXT_DEMO_MASK" type="String" displayOrder="0" maxLength="100">  </variable>
+  <variable name="PRIV_DEMO_IP" type="String" displayOrder="0" maxLength="100">  </variable>
+  <variable name="PRIV_DEMO_MASK" type="String" displayOrder="0" maxLength="100">  </variable>
+  <variable name="EXT_DEMO_IP" type="String" displayOrder="0" maxLength="100">  </variable>
+</variables>
+*}
+exec batch start
+config system global
+set hostname {$SD->SD_EXTERNAL_REFERENCE}
+end
+
+config system admin
+edit admin
+set password {$ADMIN_PASSWD}
+end 
+
+config system interface
+edit port1
+set mode static
+set ip {$ONM_DEMO_IP} {$ONM_DEMO_MASK}
+next
+edit port2
+set ip {$PRIV_DEMO_IP} {$PRIV_DEMO_MASK}
+set allowaccess ping https ssh http
+next
+edit port3
+set ip {$EXT_DEMO_IP} {$EXT_DEMO_MASK}
+set allowaccess ping https ssh http
+end
+
+config router static
+edit 1
+set gateway 192.168.2.1
+set device port1
+next
+edit 2
+set gateway 10.0.0.1
+set device "port3"
+next
+end
+
+config router policy
+edit 1
+set input-device "port2"
+set output-device "port3"
+next
+end
+
+config firewall policy
+edit 102
+set name "102"
+set srcintf "port2"
+set dstintf "port3"
+set srcaddr "all"
+set dstaddr "all"
+set action accept
+set schedule "always"
+set service "ALL"
+set logtraffic all
+set fixedport enable
+set nat enable
+next
+end
+
+config system dns
+set primary 8.8.4.4
+set secondary 8.8.8.8
+end
+
+exec batch end

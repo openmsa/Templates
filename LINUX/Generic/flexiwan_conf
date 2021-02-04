@@ -1,0 +1,13 @@
+sudo rm -f /etc/netplan/*.yaml
+echo 'network:' >> /etc/netplan/network-conf.yaml
+echo '    ethernets:' >> /etc/netplan/network-conf.yaml
+echo '        ens3:' >> /etc/netplan/network-conf.yaml
+echo '            dhcp4: true' >> /etc/netplan/network-conf.yaml
+echo '        ens4:' >> /etc/netplan/network-conf.yaml
+echo '            dhcp4: true' >> /etc/netplan/network-conf.yaml
+echo '            dhcp4-overrides:' >> /etc/netplan/network-conf.yaml
+echo '                use-routes: false' >> /etc/netplan/network-conf.yaml
+echo '    version: 2' >> /etc/netplan/network-conf.yaml
+sudo netplan apply
+hostname=`hostname` && sed -i "s/flexiwan-vnf/$hostname/g" /etc/hosts
+echo 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJvcmciOiI1ZTMwNGMyZGMzNTMxODZhNzhmNTZiOTAiLCJhY2NvdW50IjoiNWUzMDRiZWNjMzUzMTg2YTc4ZjU2YjZjIiwiaWF0IjoxNjA3NDk5OTkyfQ.eSZuYSv8LbxXTdj5VWgEg3C924dCFYkNhFQ6-U0PurQ' > /etc/flexiwan/agent/token.txt
